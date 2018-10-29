@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -e
+rm -fr var
+mkdir var
+cd var
+
+dir=$(pwd)
+echo "Installing garden-rake"
+# git clone https://github.com/ddugue/garden-rake.git
+# cd garden-rake && gem build rake-garden.gemspec
+cd /home/ddugue/Projects/garden-rake
+gem build rake-garden.gemspec
+gem install --local rake-garden-0.0.1.gem
+cd $dir
+
+
+python3.6 -m venv venv
+venv/bin/pip install -r ../etc/requirements.txt
