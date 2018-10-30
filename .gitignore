@@ -2,3 +2,7 @@ var/
 dist/
 tmp/
 .garden.json
+*.egg-info
+__pycache__
+*.pyc
+build/
