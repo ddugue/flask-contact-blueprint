@@ -1,0 +1,4 @@
+#!/bin/sh
+
+export PYTHONPATH=${PYTHONPATH}:$PWD
+FLASK_APP=tests/server.py var/venv/bin/flask run
