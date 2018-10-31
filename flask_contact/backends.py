@@ -1,6 +1,9 @@
 """ Module that regroups different email backends """
 import html
 import os
+from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
 
 from .utils import AllowedList, filter_args
 
@@ -64,25 +67,33 @@ class SESEmailBackend(EmailBackend):
         return fields.get('email')
 
     def mail(self, fields, file=None):
-        kwargs = {
-            "Source": self.from_email,
-            "Destination": {
-                'ToAddresses': [
-                    self.to_email,
-                ],
-            },
-            "Message": {
-                'Subject': {
-                    'Data': self.get_subject(fields),
-                },
-                'Body': {
-                    'Text': {
-                        'Data': self.get_message(fields),
-                    },
-                }
-            },
-        }
+        """ We use boto3 to send email """
+        message = MIMEMultipart()
+        message['Subject'] = self.get_subject(fields)
+        message['From'] = self.from_email
+        message['To'] = self.to_email
+
+        # We add a reply-to email if there is en email field sent
         reply_email = self.get_reply_email(fields)
         if reply_email:
-            kwargs["ReplyToAddresses"] = [reply_email]
-        self.client.send_email(**kwargs)
+            message.add_header('reply-to', reply_email)
+
+        # We add the body of the text
+        part = MIMEText(self.get_message(fields), 'plain')
+        message.attach(part)
+
+        # We add the attachment, if present
+        attachment = self.get_file(file)
+        if attachment:    # if file provided
+            part = MIMEApplication(attachment.read())
+            part.add_header('Content-Disposition', 'attachment', filename=attachment.filename)
+            message.attach(part)
+
+        # We need to send raw email, otherwise file is not supported
+        self.client.send_raw_email(
+            Source=message['From'],
+            Destinations=[message['To']],
+            RawMessage={
+                'Data': message.as_string()
+            }
+        )
