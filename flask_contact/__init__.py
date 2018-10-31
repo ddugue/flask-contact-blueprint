@@ -2,7 +2,7 @@ from .utils import AllowedList, get_domain
 from flask import Blueprint, request, abort, jsonify, redirect
 from flask_cors import CORS
 
-def blueprint(email_backend, allowed_origins="*"):
+def blueprint(name, email_backend, allowed_origins="*"):
     """ Return a blueprint used to send emails to a single contact email
 
     Send an email via the email backend. On success, will either return
@@ -10,7 +10,7 @@ def blueprint(email_backend, allowed_origins="*"):
     on a POST.
     To avoid XSS, only allow redirect to a domain in allowed domain
     """
-    bp = Blueprint('contact', __name__)
+    bp = Blueprint(name, __name__)
     CORS(bp, origins=allowed_origins)
 
     origins = AllowedList(allowed_origins)
@@ -19,11 +19,13 @@ def blueprint(email_backend, allowed_origins="*"):
     def view():
         kwargs = request.json() if request.is_json else request.form.to_dict()
         redirect_uri = kwargs.pop('redirect_uri', request.referrer)
+        if not request.is_json and not redirect_uri:
+            if not redirect_uri:
+                abort(400)
+            if get_domain(redirect_uri) not in origins:
+                abort(401)
+
         file = request.files.get('file')
-
-        if not request.is_json and get_domain(redirect_uri) not in origins:
-            abort(401)
-
         # We generate and send the email via our email backend
         email_backend.mail(kwargs, file)
 

@@ -41,7 +41,7 @@ class EmailFormattingTest(unittest.TestCase):
 
     def test_arg_message(self):
         "Test that get message work with an some args AND a filter"
-        backend = EmailBackend('', '', allowed_field='name')
+        backend = EmailBackend('', '', allowed_fields='name')
         self.assertEqual(backend.get_message({'name': 'David'}), 'name: David')
 
     def test_arg_message(self):
