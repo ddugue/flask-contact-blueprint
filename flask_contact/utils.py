@@ -49,4 +49,4 @@ def get_domain(url):
     """ Return the domain part of an url """
     # Taken from https://www.quora.com/How-do-I-extract-only-the-domain-name-from-an-URL
 
-    return url.split(“//”)[-1].split(“/”)[0]
+    return url.split('//')[-1].split('/')[0]
