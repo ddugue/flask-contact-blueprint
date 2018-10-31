@@ -1,40 +1,31 @@
+from .utils import AllowedList, get_domain
 from flask import Blueprint, request, abort, jsonify, redirect
 
-def send_email(from_email, to_email, subject, message, html_message):
-    pass
-
-def craft_message(message, **kmwargs):
-    pass
-
-def blueprint(from_email, to_email, allow_all=False, allow_file=False,
-              allowed_origins="*"):
+def blueprint(email_backend, allowed_origins="*"):
     """ Return a blueprint used to send emails to a single contact email
 
-    Send an email from +from_email+ to +to_email+, from email is generally a
-    no-reply kind of email.
-
-    Optional arguments:
-    * allow_all (default: False)   - will include all form fields in the email
-    * allow_file (default: False)  - will include a file if a file is present in the request,
-                                     if it is a string, only consider files whose
-                                     extensions are that string.
-    * allowed_origins (default: *) - will allow CORS request from that origin
-                                     and will only allow redirect in those domains
-                                     (if a list). * means allow all.
+    Send an email via the email backend. On success, will either return
+    success true on a json request or a redirect to the form 'redirect_uri'
+    on a POST.
+    To avoid XSS, only allow redirect to a domain in allowed domain
     """
     bp = Blueprint('contact', __name__)
+    origins = AllowedList(allowed_origins)
 
     @bp.route('/', methods="POST")
     def view():
+        kwargs = request.json() if request.is_json else request.form.to_dict()
+        redirect_uri = kwargs.pop('redirect_uri', request.referrer)
+        file = request.files.get('file')
+
+        if not request.is_json and get_domain(redirect_uri) not in origins:
+            abort(401)
+
+        # We generate and send the email via our email backend
+        email_backend.mail(kwargs, file)
+
         if request.is_json:
             return jsonify(success=True)
-        else:
-            redirect_uri = request.form.get('redirect_uri') or request.referrer
-            if allowed_origins != "*" and redirect_uri not in allowed_origins:
-                abort(401)
-
-            message = request.form.get('message', '')
-            kwargs = request.form.to_dict()
-            return redirect(redirect_uri)
+        return redirect(redirect_uri)
 
     return bp
