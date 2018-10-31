@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock
 
-from flask_contact.backends import EmailBackend
+from flask_contact.backends import EmailBackend, SESEmailBackend
 
 class EmailFormattingTest(unittest.TestCase):
     """ Test case to test email backend formatting """
@@ -58,13 +58,15 @@ class EmailFormattingTest(unittest.TestCase):
     def test_file_disallow(self):
         "Make sure that when calling send_mail with allow_file False doesnt pass file"
         backend = EmailBackend('', '')
-        backend.send_email = MagicMock()
-        backend.mail({}, 2)
-        backend.send_email.assert_called_with('', '', 'New message', '', None)
+        self.assertIsNone(backend.get_file(2))
 
     def test_file_allow(self):
         "Make sure that when calling send_mail with allow_file True pass file"
         backend = EmailBackend('', '', allow_file=True)
-        backend.send_email = MagicMock()
-        backend.mail({}, 2)
-        backend.send_email.assert_called_with('', '', 'New message', '', 2)
+        self.assertEqual(backend.get_file(2), 2)
+
+    def test_reply(self):
+        "Make sure that reply to email is working"
+        backend = SESEmailBackend('', '')
+        self.assertEqual(backend.get_reply_email({}), None)
+        self.assertEqual(backend.get_reply_email({'email': 'rely'}), 'rely')

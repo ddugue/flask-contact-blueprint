@@ -1,5 +1,6 @@
 """ Module that regroups different email backends """
 import html
+import os
 
 from .utils import AllowedList, filter_args
 
@@ -30,6 +31,10 @@ class EmailBackend:
             return self.subject
         return html.escape(self.subject(**(filter_args(fields, self.subject))))
 
+    def get_file(self, file):
+        """ Proyx to check what to return as a file """
+        return file if self.allow_file else None
+
     def get_message(self, fields):
         """ Craft a multiline message to be sent via email """
         # We need to escape each line from html tags
@@ -38,17 +43,46 @@ class EmailBackend:
             lines.append("%s: %s" % (k, item))
         return html.escape('\n'.join(lines))
 
-    @staticmethod
-    def send_email(from_email, to_email, subject, message, file=None):
-        """ Actually send an email via the current backend """
-        pass
-
     def mail(self, fields, file=None):
         """ Generate and send an email based on fields passed """
-        self.send_email(
-            self.from_email,
-            self.to_email,
-            self.get_subject(fields),
-            self.get_message(fields),
-            file if self.allow_file else None,
+        raise NotImplementedError()
+
+class SESEmailBackend(EmailBackend):
+    """ Provide an interface for SES to send email """
+
+    def __init__(self, *args, access_key=None, secret_key=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        import boto3
+        self.client = boto3.client(
+            'ses',
+            aws_access_key_id=access_key or os.getenv('AWS_ACCESS_KEY_ID_EMAIL'),
+            aws_secret_access_key=secret_key or os.getenv('AWS_SECRET_ACCESS_KEY_EMAIL'),
         )
+
+    def get_reply_email(self, fields):
+        """ Return a reply email to be included in email """
+        return fields.get('email')
+
+    def mail(self, fields, file=None):
+        kwargs = {
+            "Source": self.from_email,
+            "Destination": {
+                'ToAddresses': [
+                    self.to_email,
+                ],
+            },
+            "Message": {
+                'Subject': {
+                    'Data': self.get_subject(fields),
+                },
+                'Body': {
+                    'Text': {
+                        'Data': self.get_message(fields),
+                    },
+                }
+            },
+        }
+        reply_email = self.get_reply_email(fields)
+        if reply_email:
+            kwargs["ReplyToAddresses"] = [reply_email]
+        self.client.send_email(**kwargs)
