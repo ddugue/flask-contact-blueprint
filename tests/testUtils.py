@@ -47,6 +47,10 @@ class ArgFilterTest(unittest.TestCase):
 
 class DomainTest(unittest.TestCase):
     """ Test the parsing of the domain """
+    def test_domain_none(self):
+        "Make sure Nonetype is supported"
+        self.assertIsNone(get_domain(None))
+
     def test_domain_full(self):
         "Ensure that it works with a full url"
         domain = "google.com"
