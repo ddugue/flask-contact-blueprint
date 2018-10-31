@@ -1,6 +1,6 @@
 import unittest
 
-from flask_contact.utils import AllowedList
+from flask_contact.utils import AllowedList, filter_args
 
 class AllowedListTest(unittest.TestCase):
     """ Test case for the AllowedList class """
@@ -36,3 +36,10 @@ class AllowedListTest(unittest.TestCase):
         "Ensure that the filter work on a list"
         allowed = AllowedList('a').filter({'a': 'b', 'c': 'd'})
         self.assertEqual([('a', 'b')], list(allowed))
+
+class ArgFilterTest(unittest.TestCase):
+    """ Test case to check if arguments filtering is working """
+    def test_filter_args(self):
+        l = lambda a=2: a
+        dic = filter_args({'a': 8, 'b': 3}, l)
+        self.assertEqual(l(**dic), 8)

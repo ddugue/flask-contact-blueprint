@@ -1,4 +1,5 @@
 """ Represent multiple data utilities used by flask contact blueprint """
+import inspect
 
 class AllowedList:
     """ List that represent allowed items
@@ -33,3 +34,19 @@ class AllowedList:
             for key in obj:
                 if key in self:
                     yield key
+
+
+def filter_args(dict_to_filter, fn):
+    """ Function that filter +dict_to_filter+ to work with fn """
+    # Taken from https://stackoverflow.com/questions/26515595/how-does-one-ignore-unexpected-keyword-arguments-passed-to-a-function
+
+    sig = inspect.signature(fn)
+    filter_keys = [param.name for param in sig.parameters.values() if param.kind == param.POSITIONAL_OR_KEYWORD]
+    filtered_dict = {filter_key:dict_to_filter[filter_key] for filter_key in filter_keys}
+    return filtered_dict
+
+def get_domain(url):
+    """ Return the domain part of an url """
+    # Taken from https://www.quora.com/How-do-I-extract-only-the-domain-name-from-an-URL
+
+    return url.split(“//”)[-1].split(“/”)[0]
