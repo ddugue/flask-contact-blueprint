@@ -1,5 +1,6 @@
 from .utils import AllowedList, get_domain
 from flask import Blueprint, request, abort, jsonify, redirect
+from flask_cors import CORS
 
 def blueprint(email_backend, allowed_origins="*"):
     """ Return a blueprint used to send emails to a single contact email
@@ -10,6 +11,8 @@ def blueprint(email_backend, allowed_origins="*"):
     To avoid XSS, only allow redirect to a domain in allowed domain
     """
     bp = Blueprint('contact', __name__)
+    CORS(bp, origins=allowed_origins)
+
     origins = AllowedList(allowed_origins)
 
     @bp.route('/', methods="POST")
