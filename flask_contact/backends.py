@@ -1,7 +1,7 @@
 """ Module that regroups different email backends """
 import html
 
-from utils import AllowedList, filter_args
+from .utils import AllowedList, filter_args
 
 class EmailBackend:
     """ Provide an interface to send email """
@@ -28,15 +28,15 @@ class EmailBackend:
             return "New message" # default value
         if isinstance(self.subject, str):
             return self.subject
-        return self.subject(**(filter_args(fields, self.subject)))
+        return html.escape(self.subject(**(filter_args(fields, self.subject))))
 
     def get_message(self, fields):
         """ Craft a multiline message to be sent via email """
         # We need to escape each line from html tags
         lines = []
         for k, item in self.allowed_fields.filter(fields):
-            lines.append("%s: %s" % (html.escape(k), html.escape(item)))
-        return '\n'.join(lines)
+            lines.append("%s: %s" % (k, item))
+        return html.escape('\n'.join(lines))
 
     @staticmethod
     def send_email(from_email, to_email, subject, message, file=None):
