@@ -2,7 +2,8 @@ import unittest
 
 from flask_contact.utils import AllowedList
 
-class AllowedItemsTest(unittest.TestCase):
+class AllowedListTest(unittest.TestCase):
+    """ Test case for the AllowedList class """
     def test_allowed_none(self):
         "Ensures that when no items are allowed it return False"
         self.assertFalse('' in AllowedList(None))

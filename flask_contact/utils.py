@@ -1,3 +1,4 @@
+""" Represent multiple data utilities used by flask contact blueprint """
 
 class AllowedList:
     """ List that represent allowed items
@@ -11,6 +12,7 @@ class AllowedList:
         self.allowed_items = allowed_items or []
 
     def items(self):
+        """ return allowed items as a list """
         if isinstance(self.allowed_items, str):
             return self.allowed_items.split(' ')
         return self.allowed_items
@@ -24,10 +26,10 @@ class AllowedList:
     def filter(self, obj):
         """ Filter object keys by wether it is allowed """
         if isinstance(obj, dict):
-            for k, v in obj.items():
-                if k in self:
-                    yield k, v
+            for key, item in obj.items():
+                if key in self:
+                    yield key, item
         else:
-            for k in obj:
-                if k in self:
-                    yield k
+            for key in obj:
+                if key in self:
+                    yield key
