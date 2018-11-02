@@ -2,4 +2,13 @@
 set -e
 echo "Making sure unittests are working"
 bin/test
-echo "HEOLL"
+
+echo "Building wheel"
+var/venv/bin/python setup.py sdist
+
+echo "Getting version"
+VERSION=$(var/venv/bin/python setup.py --version)
+echo "Got version $VERSION"
+echo "Pushing tag"
+git tag -a v$VERSION -m "Tagged version v$VERSION"
+git push --tags

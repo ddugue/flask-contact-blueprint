@@ -13,7 +13,7 @@ VERSION = None
 about = {}
 if not VERSION:
     here = path.abspath(path.dirname(__file__))
-    with open(path.join(here, 'flask-contact-blueprint', '__version__.py')) as f:
+    with open(path.join(here, 'flask_contact', '__version__.py')) as f:
         exec(f.read(), about)
 else:
     about['__version__'] = VERSION
