@@ -3,6 +3,16 @@ from unittest.mock import MagicMock
 
 from flask_contact.backends import EmailBackend, SESEmailBackend
 
+class FakeFile:
+    """ Fake file class to work with file on email backend """
+    def __init__(self, filename):
+        self.filename = filename
+
+    def __eq__(self, other):
+        if isinstance(other, str):
+            return other == self.filename
+        return other.filename == self.filename
+
 class EmailFormattingTest(unittest.TestCase):
     """ Test case to test email backend formatting """
 
@@ -58,12 +68,32 @@ class EmailFormattingTest(unittest.TestCase):
     def test_file_disallow(self):
         "Make sure that when calling send_mail with allow_file False doesnt pass file"
         backend = EmailBackend('', '')
-        self.assertIsNone(backend.get_file(2))
+        self.assertIsNone(backend.get_file(FakeFile("abc.pdf")))
 
     def test_file_allow(self):
         "Make sure that when calling send_mail with allow_file True pass file"
         backend = EmailBackend('', '', allow_file=True)
-        self.assertEqual(backend.get_file(2), 2)
+        self.assertEqual(backend.get_file(FakeFile("abc.pdf")), "abc.pdf")
+
+    def test_file_allow_ext(self):
+        "Make sure that when calling send_mail with allow_file extension"
+        backend = EmailBackend('', '', allow_file="pdf")
+        self.assertEqual(backend.get_file(FakeFile("abc.pdf")), "abc.pdf")
+
+    def test_file_disallow_ext(self):
+        "Make sure that when calling send_mail with disallowed file extension"
+        backend = EmailBackend('', '', allow_file="pdf")
+        self.assertIsNone(backend.get_file(FakeFile("abc.exe")))
+
+    def test_file_allow_ext_list(self):
+        "Make sure that when calling send_mail with allow_file extension in list"
+        backend = EmailBackend('', '', allow_file=["pdf"])
+        self.assertEqual(backend.get_file(FakeFile("abc.pdf")), "abc.pdf")
+
+    def test_file_disallow_ext(self):
+        "Make sure that when calling send_mail with disallowed file extension in list"
+        backend = EmailBackend('', '', allow_file=["pdf"])
+        self.assertIsNone(backend.get_file(FakeFile("abc.exe")))
 
     def test_reply(self):
         "Make sure that reply to email is working"

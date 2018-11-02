@@ -5,7 +5,7 @@ from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 
-from .utils import AllowedList, filter_args
+from .utils import AllowedList, filter_args, filename_ext
 
 class EmailBackend:
     """ Provide an interface to send email """
@@ -35,13 +35,14 @@ class EmailBackend:
         return html.escape(self.subject(**(filter_args(fields, self.subject))))
 
     def get_file(self, file):
-        """ Proyx to check what to return as a file """
+        """ Proxy to check what to return as a file """
+        ext = filename_ext(file.filename) if file else None
         if isinstance(self.allow_file, str):
             # We check if file extension is the same as +allow_file+
-            return file if self.allow_file else None
+            return file if ext == self.allow_file else None
         if hasattr(self.allow_file, '__iter__'):
             # We check if file extension is in allowed +allow_file+
-            return file if self.allow_file else None
+            return file if ext in self.allow_file else None
         return file if self.allow_file else None
 
     def get_message(self, fields):
