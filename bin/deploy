@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+echo "Making sure unittests are working"
+bin/test
+echo "HEOLL"
