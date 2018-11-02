@@ -36,6 +36,12 @@ class EmailBackend:
 
     def get_file(self, file):
         """ Proyx to check what to return as a file """
+        if isinstance(self.allow_file, str):
+            # We check if file extension is the same as +allow_file+
+            return file if self.allow_file else None
+        if hasattr(self.allow_file, '__iter__'):
+            # We check if file extension is in allowed +allow_file+
+            return file if self.allow_file else None
         return file if self.allow_file else None
 
     def get_message(self, fields):
@@ -84,7 +90,7 @@ class SESEmailBackend(EmailBackend):
 
         # We add the attachment, if present
         attachment = self.get_file(file)
-        if attachment:    # if file provided
+        if attachment:
             part = MIMEApplication(attachment.read())
             part.add_header('Content-Disposition', 'attachment', filename=attachment.filename)
             message.attach(part)

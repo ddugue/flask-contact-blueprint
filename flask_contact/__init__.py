@@ -1,6 +1,6 @@
-from .utils import AllowedList, get_domain
 from flask import Blueprint, request, abort, jsonify, redirect
 from flask_cors import CORS
+from .utils import AllowedList, get_domain
 
 def blueprint(name, email_backend, allowed_origins="*"):
     """ Return a blueprint used to send emails to a single contact email
