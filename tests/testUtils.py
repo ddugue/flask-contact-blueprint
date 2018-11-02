@@ -1,6 +1,6 @@
 import unittest
 
-from flask_contact.utils import AllowedList, filter_args, get_domain
+from flask_contact.utils import AllowedList, filter_args, get_domain, filename_ext
 
 class AllowedListTest(unittest.TestCase):
     """ Test case for the AllowedList class """
@@ -68,3 +68,16 @@ class DomainTest(unittest.TestCase):
         domain = "google.com"
         uri = "http://google.com"
         self.assertEqual(get_domain(uri), domain)
+
+class FileExtensionTest(unittest.TestCase):
+    def test_extension_no_point(self):
+        "Ensure that it works when no extension"
+        self.assertFalse(filename_ext('file'))
+
+    def test_extension_two_point(self):
+        "Ensure that it works when there is two points in filename"
+        self.assertEqual(filename_ext('file.1.gz'), 'gz')
+
+    def test_extension(self):
+        "Ensure that it works for a regular filename"
+        self.assertEqual(filename_ext('file.gz'), 'gz')

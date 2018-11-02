@@ -51,3 +51,9 @@ def get_domain(url):
     if url is None:
         return None
     return url.split('//')[-1].split('/')[0]
+
+def filename_ext(filename):
+    """ Function that returns filename extension """
+    # Taken from http://flask.pocoo.org/docs/1.0/patterns/fileuploads/
+
+    return '.' in filename and filename.rsplit('.', 1)[1].lower()
