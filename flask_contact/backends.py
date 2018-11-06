@@ -125,6 +125,7 @@ class SMTPEmailBackend(EmailBackend):
             server.close()
         except smtplib.SMTPAuthenticationError:
             print("The username and/or password you entered is incorrect")
+            raise
 
 class SESEmailBackend(EmailBackend):
     """ Provide an interface for SES to send email """
