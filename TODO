@@ -1,4 +1,4 @@
-Add license
 Do README
+Add SMTP Backend
 Support regex for allowed list
-Filter file by extension
+Make naming blueprint optional
