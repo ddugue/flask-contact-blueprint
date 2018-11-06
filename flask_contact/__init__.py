@@ -17,7 +17,7 @@ def blueprint(name, email_backend, allowed_origins="*"):
 
     @bp.route('/', methods=["POST"])
     def view():
-        kwargs = request.json() if request.is_json else request.form.to_dict()
+        kwargs = request.json if request.is_json else request.form.to_dict()
         redirect_uri = kwargs.pop('redirect_uri', request.referrer)
         if not request.is_json and not redirect_uri:
             if not redirect_uri:
