@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock
 
-from flask_contact.backends import EmailBackend, SESEmailBackend
+from flask_contact.backends import EmailBackend
 
 class FakeFile:
     """ Fake file class to work with file on email backend """
@@ -97,6 +97,6 @@ class EmailFormattingTest(unittest.TestCase):
 
     def test_reply(self):
         "Make sure that reply to email is working"
-        backend = SESEmailBackend('', '')
+        backend = EmailBackend('', '')
         self.assertEqual(backend.get_reply_email({}), None)
         self.assertEqual(backend.get_reply_email({'email': 'rely'}), 'rely')
