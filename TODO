@@ -1,4 +1,4 @@
 Do README
-Add SMTP Backend
 Support regex for allowed list
 Make naming blueprint optional
+Add reply-to email field for a more generic approach (like subject)
