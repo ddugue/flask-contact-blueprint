@@ -40,22 +40,36 @@ app.register_blueprint(contact_blueprint(email_backend))
 
 ## API Guide
 This blueprint is meant to be highly configureable to allow any flask backend to deploy quickly a working endpoint for contact
-forms. The endpoint support JSON Ajax calls or POST Form with a redirect. Most of the configuration is done through the Email Backend.
+forms. The endpoint support `JSON` Ajax calls or `POST` Form with a redirect. Most of the configuration is done through the Email Backend.
 
 ### <a name="baseemail"></a>Base Email backends
 
 ### SMTP Backend
-The SMTP Backend - `flask_contact.backends.SMTPBackend` is a simple SMTP Backend. It connects securely using python [SMTPLib](https://docs.python.org/3/library/smtplib.html) to any SMTP server to send emails
+The SMTP Backend (`flask_contact.backends.SMTPBackend`) is a simple SMTP Backend. It connects securely using python [SMTPLib](https://docs.python.org/3/library/smtplib.html) to any SMTP server to send emails
 #### Usage
-In addition to the usual backend configuration ([See above](#baseemail)). The following fields can/need to be configured.
+In addition to the usual backend configuration ([See above](#baseemail)). The following fields need to be configured.
 
-
-*class SMTPBackend(smtp_server=None, smtp_user=None, smtp_password=None, smtp_port=465)*
+*class __SMTPBackend__(`smtp_server`=None, `smtp_user`=None, `smtp_password`=None, `smtp_port`=465)*
 * Where `smtp_server` is the SMTP server endpoint (i.e https://smtp.gmail.com)
 * Where `smtp_user` is the SMTP user to use, normally the email address (i.e mailer@gmail.com)
 * Where `smtp_password` is the SMTP password to use to connect with smtp\_user. *Alternatively, you can also set environment variable `SMTP_PASSWORD` to automatically set `smtp_password` to desired value*.
 * Where `smtp_port` (default: 465) is the SMTP Port to use.
 
+#### Example
+```python
+import os
+import flask_contact
+
+flask_contact.backends.SMTPBackend(
+    to_email="info@company.com",
+    from_email="noreply@company.com",
+    subject="New message from your website",
+    smtp_server="http://smtp.gmail.com",
+    smtp_user="mailer@gmail.com",
+    smtp_password="confidentialPassword1234",
+    smtp_port=465,
+)
+```
 ### SES Backend
 The SES Backend uses Amazon SES to send email. flask-contact-blueprint uses boto3 to send its email. When
 installing make sure to install boto3 with pip if you want to use the SES backend:
