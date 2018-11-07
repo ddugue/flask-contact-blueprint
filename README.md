@@ -49,7 +49,7 @@ The SMTP Backend (`flask_contact.backends.SMTPBackend`) is a simple SMTP Backend
 #### Usage
 In addition to the usual backend configuration ([See above](#baseemail)). The following fields need to be configured.
 
-*class __SMTPBackend__(`smtp_server`=None, `smtp_user`=None, `smtp_password`=None, `smtp_port`=465)*
+class __SMTPBackend__(*smtp_server*=None, *smtp_user*=None, *smtp_password*=None, *smtp_port*=465)
 * Where `smtp_server` is the SMTP server endpoint (i.e https://smtp.gmail.com)
 * Where `smtp_user` is the SMTP user to use, normally the email address (i.e mailer@gmail.com)
 * Where `smtp_password` is the SMTP password to use to connect with smtp\_user. *Alternatively, you can also set environment variable `SMTP_PASSWORD` to automatically set `smtp_password` to desired value*.
