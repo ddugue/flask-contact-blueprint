@@ -37,6 +37,24 @@ app = Flask(__name__)
 app.register_blueprint(contact_blueprint(email_backend))
 ```
 
+## Basic usage
+Assuming you have the configuration above and that your endpoint would be set at `http://example.com`, you could do the following:
+```bash
+curl -d "email=customer@email.com&message=Hello!" -X POST http://example.com/
+```
+
+This would send the following email to `info@company.com`:
+```
+From: <noreply@company.com>
+To: <info@company.com>
+Subject: New message
+
+email: customer@email.com
+message: Hello!
+```
+
+That's it! There exists multiple configuration you can apply to prevent certain fields to be proxied, to work with CORS or to allow files to be sent. Be sure to read the API guide below.
+
 
 ## API Guide
 This blueprint is meant to be highly configureable to allow any flask backend to deploy quickly a working endpoint for contact
