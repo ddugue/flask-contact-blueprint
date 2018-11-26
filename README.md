@@ -61,6 +61,7 @@ This blueprint is meant to be highly configureable to allow any flask backend to
 forms. The endpoint support `JSON` Ajax calls or `POST` Form with a redirect. Most of the configuration is done through the Email Backend.
 
 ### <a name="baseemail"></a>Base Email backends
+All *flask-contact-blueprint* email backend contains some common configurations
 
 ### SMTP Backend
 The SMTP Backend (`flask_contact.backends.SMTPBackend`) is a simple SMTP Backend. It connects securely using python [SMTPLib](https://docs.python.org/3/library/smtplib.html) to any SMTP server to send emails
