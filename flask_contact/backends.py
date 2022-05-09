@@ -13,7 +13,8 @@ class EmailBackend:
     """ Provide an interface to send email """
 
     def __init__(self, from_email, to_email,
-                 subject=None, allowed_fields="*", allow_file=False):
+                 subject=None, allowed_fields="*", allow_file=False,
+                 red_herring=None):
         """ Configuration for email backend:
 
         * from_email: Email address to send emails from
@@ -27,6 +28,16 @@ class EmailBackend:
         self.subject        = subject
         self.allowed_fields = AllowedList(allowed_fields)
         self.allow_file     = allow_file
+        self.red_herring    = red_herring
+
+    def is_red_herring(self, fields):
+        """ Function that returns wether the transaction is a red herring
+
+        It should basically use an 'invisible' field on the frontend that shouldn't be
+        populated by bots."""
+        if self.red_herring and (fields.get(self.red_herring) or None) is None:
+            return True
+        return False
 
     def get_subject(self, fields):
         """ Return the subject of the email message """

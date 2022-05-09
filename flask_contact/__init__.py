@@ -25,6 +25,9 @@ def blueprint(name, email_backend, allowed_origins="*"):
             if get_domain(redirect_uri) not in origins:
                 abort(401)
 
+        if email_backend.is_red_herring(kwargs):
+            abort(400)
+
         file = request.files.get('file')
         # We generate and send the email via our email backend
         email_backend.mail(kwargs, file)
