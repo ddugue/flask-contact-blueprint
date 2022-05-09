@@ -35,7 +35,7 @@ class EmailBackend:
 
         It should basically use an 'invisible' field on the frontend that shouldn't be
         populated by bots."""
-        if self.red_herring and (fields.get(self.red_herring) or None) is None:
+        if self.red_herring and (fields.get(self.red_herring) or None) is not None:
             return True
         return False
 
@@ -63,7 +63,8 @@ class EmailBackend:
         # We need to escape each line from html tags
         lines = []
         for k, item in self.allowed_fields.filter(fields):
-            lines.append("%s: %s" % (k, item))
+            if item:
+                lines.append("%s: %s" % (k, item))
         return html.escape('\n'.join(lines))
 
     def get_reply_email(self, fields):
